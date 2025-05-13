@@ -216,12 +216,24 @@ def rate_movie(title):
     comment = request.form.get("comment")
 
     with driver.session() as session_db:
-        session_db.run("""
-            MATCH (u:User {name: $username}), (m:Movie {title: $title})
-            MERGE (u)-[r:RATED]->(m)
-            SET r.rating = toInteger($rating), r.comment = $comment
-        """, username=username, title=title, rating=rating, comment=comment)
+        # Var olan yorum varsa güncelle, yoksa oluştur
+        result = session_db.run("""
+            MATCH (u:User {name: $username})-[r:RATED]->(m:Movie {title: $title})
+            RETURN r
+        """, username=username, title=title)
 
+        if result.single():
+            # Güncelleme
+            session_db.run("""
+                MATCH (u:User {name: $username})-[r:RATED]->(m:Movie {title: $title})
+                SET r.rating = toInteger($rating), r.comment = $comment
+            """, username=username, title=title, rating=rating, comment=comment)
+        else:
+            # Yeni oluştur
+            session_db.run("""
+                MATCH (u:User {name: $username}), (m:Movie {title: $title})
+                CREATE (u)-[:RATED {rating: toInteger($rating), comment: $comment}]->(m)
+            """, username=username, title=title, rating=rating, comment=comment)
     return redirect(f"/movie/{title}")
 
 
