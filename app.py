@@ -146,6 +146,13 @@ def movie_detail(title):
         movie = result.single()
         if not movie:
             return render_template("not_found.html"), 404
+        
+        # Filmin türlerini çek
+        genres_result = session_db.run("""
+            MATCH (m:Movie {title: $title})-[:IN_GENRE]->(g:Genre)
+            RETURN g.name AS genre
+        """, title=title)
+        genres = [record["genre"] for record in genres_result]
 
         # Beğeni durumu
         like_result = session_db.run("""
@@ -173,7 +180,7 @@ def movie_detail(title):
         comments = comments_result.data()
 
     return render_template("movie_detail.html", movie=movie, liked=liked,
-                           user_rating=user_rating, user_comment=user_comment, comments=comments)
+                           user_rating=user_rating, user_comment=user_comment, comments=comments,genres=genres)
 
 
 @app.route("/like/<title>", methods=["POST"])
