@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ genre_name }} Türündeki Filmler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Film Öneri Sistemi</div>
+        <div class="nav-links">
+            <a href="/home">Ana Sayfa</a>
+            <a href="/profile">Profilim</a>
+            <a href="/logout">Çıkış Yap</a>
+        </div>
+    </div>
+
+    <h2>{{ genre_name }} Türündeki Filmler</h2>
+    <ul>
+        {% for film in movies %}
+        <li><a href="/movie/{{ film.title }}">{{ film.title }} ({{ film.year }})</a></li>
+        {% else %}
+        <li>Bu türe ait film bulunamadı.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

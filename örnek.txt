@@ -1,0 +1,70 @@
+CREATE (:Movie {title: "The Shawshank Redemption", year: 1994});
+CREATE (:Movie {title: "The Godfather", year: 1972});
+CREATE (:Movie {title: "The Dark Knight", year: 2008});
+CREATE (:Movie {title: "Pulp Fiction", year: 1994});
+CREATE (:Movie {title: "Schindler's List", year: 1993});
+CREATE (:Movie {title: "The Lord of the Rings: The Return of the King", year: 2003});
+CREATE (:Movie {title: "Forrest Gump", year: 1994});
+CREATE (:Movie {title: "Inception", year: 2010});
+CREATE (:Movie {title: "Fight Club", year: 1999});
+CREATE (:Movie {title: "The Matrix", year: 1999});
+CREATE (:Movie {title: "Goodfellas", year: 1990});
+CREATE (:Movie {title: "The Silence of the Lambs", year: 1991});
+CREATE (:Movie {title: "Saving Private Ryan", year: 1998});
+CREATE (:Movie {title: "The Green Mile", year: 1999});
+CREATE (:Movie {title: "Back to the Future", year: 1985});
+CREATE (:Movie {title: "Terminator 2: Judgment Day", year: 1991});
+CREATE (:Movie {title: "The Lion King", year: 1994});
+CREATE (:Movie {title: "Gladiator", year: 2000});
+CREATE (:Movie {title: "Titanic", year: 1997});
+CREATE (:Movie {title: "Avatar", year: 2009});
+
+CREATE (:User {name: "Ali"});
+CREATE (:User {name: "Veli"});
+CREATE (:User {name: "Ayşe"});
+CREATE (:User {name: "Fatma"});
+CREATE (:User {name: "Mehmet"});
+
+MATCH (u:User {name: "Ali"}), (m:Movie {title: "The Shawshank Redemption"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Ali"}), (m:Movie {title: "The Godfather"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Veli"}), (m:Movie {title: "The Dark Knight"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Veli"}), (m:Movie {title: "Pulp Fiction"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Ayşe"}), (m:Movie {title: "Schindler's List"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Ayşe"}), (m:Movie {title: "The Lord of the Rings: The Return of the King"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Fatma"}), (m:Movie {title: "Forrest Gump"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Fatma"}), (m:Movie {title: "Inception"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Mehmet"}), (m:Movie {title: "Fight Club"})
+CREATE (u)-[:LIKES]->(m);
+MATCH (u:User {name: "Mehmet"}), (m:Movie {title: "The Matrix"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Ali"}), (m:Movie {title: "Goodfellas"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Veli"}), (m:Movie {title: "The Silence of the Lambs"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Ayşe"}), (m:Movie {title: "Saving Private Ryan"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Fatma"}), (m:Movie {title: "The Green Mile"})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {name: "Mehmet"}), (m:Movie {title: "Back to the Future"})
+CREATE (u)-[:LIKES]->(m);

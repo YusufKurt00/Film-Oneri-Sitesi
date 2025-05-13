@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Film Öneri Sistemi</div>
+        <div class="nav-links">
+            <a href="/profile">Profilim</a>
+            <a href="/logout">Çıkış Yap</a>
+        </div>
+    </div>
+
+    <h1>Merhaba, {{ username }}!</h1>
+
+    <div class="film-categories">
+        <div class="film-category">
+            <h3>En Son Eklenen Filmler</h3>
+            <div class="film-grid">
+                {% for film in recent_movies %}
+                <a href="/movie/{{ film.title }}" class="film-card">
+                    <h4>{{ film.title }}</h4>
+                    <div>{{ film.year }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="film-category">
+            <h3>Senin İçin Önerilen</h3>
+            <div class="film-grid">
+                {% for film in recommendations %}
+                <a href="/movie/{{ film.title }}" class="film-card">
+                    <h4>{{ film.title }}</h4>
+                    <div>{{ film.year }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="film-category">
+        <h3>En Çok Beğenilen Filmler</h3>
+        <div class="film-grid">
+            {% for film in popular_movies %}
+            <a href="/movie/{{ film.title }}" class="film-card">
+                <h4>{{ film.title }}</h4>
+                <div>{{ film.year }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Tüm Filmler</h3>
+        <ul>
+            {% for film in all_movies %}
+            <li>
+                <a href="/movie/{{ film.title }}">{{ film.title }} ({{ film.year }})</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>Film Türlerine Göre Filmler</h3>
+        <ul>
+            {% for genre in genres %}
+            <li><a href="{{ url_for('genre_movies', genre_name=genre.name) }}">{{ genre.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+</body>
+</html>
