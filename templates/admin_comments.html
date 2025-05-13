@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yorum Denetleme - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Admin Paneli</div>
+        <div class="nav-links">
+            <a href="/admin">Geri Dön</a>
+            <a href="/logout">Çıkış Yap</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Kullanıcı Yorumları</h2>
+        {% if comments %}
+        <table>
+            <tr>
+                <th>Kullanıcı</th>
+                <th>Film</th>
+                <th>Puan</th>
+                <th>Yorum</th>
+                <th>Sil</th>
+            </tr>
+            {% for c in comments %}
+            <tr>
+                <td>{{ c.username }}</td>
+                <td>
+                    <a href="{{ url_for('movie_detail', title=c.movie_title) }}">{{ c.movie_title }}</a>
+                </td>
+                <td>{{ c.rating }}</td>
+                <td>{{ c.comment }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('delete_comment', rel_id=c.rel_id) }}">
+                        <button type="submit">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>Yorum bulunamadı.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

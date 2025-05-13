@@ -270,9 +270,6 @@ def genre_movies(genre_name):
 
 
 
-
-
-
 @app.route("/profile")
 def profile():
     if "username" not in session:
@@ -418,6 +415,48 @@ def add_movie():
         """, title=title, year=year, genre=genre)
 
     return redirect("/admin")
+
+
+@app.route("/admin/comments")
+def admin_comments():
+    if session.get("username") != "Admin":
+        return redirect("/")
+
+    with driver.session() as session_db:
+        results = session_db.run("""
+            MATCH (u:User)-[r:RATED]->(m:Movie)
+            RETURN elementId(r) AS rel_id, u.name AS username, m.title AS movie_title,
+                   r.rating AS rating, r.comment AS comment
+            ORDER BY m.title
+        """)
+        comments = []
+        
+        for record in results:
+            comments.append({
+                "rel_id": record["rel_id"],
+                "username": record["username"],
+                "movie_title": record["movie_title"],
+                "rating": record["rating"],
+                "comment": record["comment"]
+            })
+
+    return render_template("admin_comments.html", comments=comments)
+
+
+@app.route("/admin/delete_comment/<rel_id>", methods=["POST"])
+def delete_comment(rel_id):
+    if session.get("username") != "Admin":
+        return redirect("/")
+
+    with driver.session() as session_db:
+        session_db.run("""
+            MATCH ()-[r:RATED]->()
+            WHERE elementId(r) = $rel_id
+            DELETE r
+        """, rel_id=rel_id)
+
+    return redirect("/admin/comments")
+
 
 
 @app.route("/admin/delete_movie/<title>", methods=["POST"])
