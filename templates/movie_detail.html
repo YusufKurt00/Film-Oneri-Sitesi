@@ -18,38 +18,43 @@
 
     <div class="card">
         <h1>{{ movie.title }} <small>({{ movie.year }})</small></h1>
-        <p><strong>Türü:</strong> {{ ", ".join(genres) }}</p>
-
-        {% if tmdb.poster_path %}
-            <img src="{{ tmdb.poster_path }}" alt="Poster" style="width:200px;">
-        {% endif %}
-
-        {% if tmdb.tmdb_rating %}
-            <p><strong>TMDb Puanı:</strong> {{ tmdb.tmdb_rating }}</p>
-        {% endif %}
-
-        {% if tmdb.overview %}
-            <p><strong>Özet:</strong> {{ tmdb.overview }}</p>
-        {% endif %}
-
-        {% if tmdb.trailer_url %}
-            <p><a href="{{ tmdb.trailer_url }}" target="_blank" class="btn-danger">🎬 Fragmanı İzle</a></p>
-        {% endif %}
         
-        <br>
-
-        <div class="film-rating">
-            <form action="/like/{{ movie.title }}" method="POST">
-                {% if liked %}
-                <button type="submit" name="action" value="unlike" class="btn-danger">
-                    Beğenmekten Vazgeç
-                </button>
-                {% else %}
-                <button type="submit" name="action" value="like">
-                    Beğen
-                </button>
+        <div class="movie-details">
+            <div class="movie-media">
+                {% if tmdb.poster_path %}
+                    <img src="{{ tmdb.poster_path }}" alt="Poster" class="movie-poster">
                 {% endif %}
-            </form>
+                
+                {% if tmdb.trailer_url %}
+                    <p><a href="{{ tmdb.trailer_url }}" target="_blank" class="trailer-link">🎬 Fragmanı İzle</a></p>
+                {% endif %}
+            </div>
+            
+            <div class="movie-info">
+                <p><strong>Türü:</strong> {{ ", ".join(genres) }}</p>
+                
+                {% if tmdb.tmdb_rating %}
+                    <p><strong>TMDb Puanı:</strong> {{ tmdb.tmdb_rating }}</p>
+                {% endif %}
+                
+                {% if tmdb.overview %}
+                    <p><strong>Özet:</strong> {{ tmdb.overview }}</p>
+                {% endif %}
+                
+                <div class="film-rating">
+                    <form action="/like/{{ movie.title }}" method="POST">
+                        {% if liked %}
+                        <button type="submit" name="action" value="unlike" class="btn-danger">
+                            Beğenmekten Vazgeç
+                        </button>
+                        {% else %}
+                        <button type="submit" name="action" value="like">
+                            Beğen
+                        </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

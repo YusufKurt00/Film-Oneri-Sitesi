@@ -18,28 +18,36 @@
         <h2>Kullanıcı Yorumları</h2>
         {% if comments %}
         <table>
-            <tr>
-                <th>Kullanıcı</th>
-                <th>Film</th>
-                <th>Puan</th>
-                <th>Yorum</th>
-                <th>Sil</th>
-            </tr>
-            {% for c in comments %}
-            <tr>
-                <td>{{ c.username }}</td>
-                <td>
-                    <a href="{{ url_for('movie_detail', title=c.movie_title) }}">{{ c.movie_title }}</a>
-                </td>
-                <td>{{ c.rating }}</td>
-                <td>{{ c.comment }}</td>
-                <td>
-                    <form method="POST" action="{{ url_for('delete_comment', rel_id=c.rel_id) }}">
-                        <button type="submit">Sil</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+            <thead>
+                <tr>
+                    <th>Kullanıcı</th>
+                    <th>Film</th>
+                    <th>Puan</th>
+                    <th>Yorum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in comments %}
+                <tr>
+                    <td>{{ c.username }}</td>
+                    <td>
+                        <a href="{{ url_for('movie_detail', title=c.movie_title) }}">{{ c.movie_title }}</a>
+                    </td>
+                    <td>
+                        <div class="star-rating">
+                            {% for i in range(c.rating) %}★{% endfor %}
+                        </div>
+                    </td>
+                    <td>{{ c.comment }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_comment', rel_id=c.rel_id) }}">
+                            <button type="submit" class="btn-danger btn-sm">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
         {% else %}
         <p>Yorum bulunamadı.</p>
