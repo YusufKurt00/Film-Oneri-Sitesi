@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 from neo4j import GraphDatabase
+import requests
 
 app = Flask(__name__)
 app.secret_key= 'cok_gizli_anahtar'
@@ -8,6 +9,30 @@ uri = "bolt://localhost:7687"
 user = "neo4j"
 password = "123123yk"
 driver = GraphDatabase.driver(uri, auth=(user, password))
+
+
+TMDB_API_KEY = "f937deade31ade1eff82323043246bc0"
+
+def get_movie_details_from_tmdb(title):
+    url = f"https://api.themoviedb.org/3/search/movie"
+    params = {
+        "api_key": TMDB_API_KEY,
+        "query": title,
+        "language": "tr-TR"
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data["results"]:
+            movie = data["results"][0]
+            return {
+                "poster_path": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}",
+                "overview": movie.get("overview"),
+                "tmdb_rating": round(movie.get("vote_average", 0), 1),
+                "tmdb_id": movie.get("id")
+            }
+    return {}
 
 
 # Ana Sayfa
@@ -146,22 +171,20 @@ def movie_detail(title):
         movie = result.single()
         if not movie:
             return render_template("not_found.html"), 404
-        
-        # Filmin türlerini çek
+
+        # Neo4j bilgileri
         genres_result = session_db.run("""
             MATCH (m:Movie {title: $title})-[:IN_GENRE]->(g:Genre)
             RETURN g.name AS genre
         """, title=title)
         genres = [record["genre"] for record in genres_result]
 
-        # Beğeni durumu
         like_result = session_db.run("""
             MATCH (u:User {name: $username}), (m:Movie {title: $title})
             RETURN EXISTS((u)-[:LIKES]->(m)) AS liked
         """, username=username, title=title)
         liked = like_result.single()["liked"]
 
-        # Kullanıcının puanı ve yorumu
         rating_result = session_db.run("""
             MATCH (u:User {name: $username})-[r:RATED]->(m:Movie {title: $title})
             RETURN r.rating AS rating, r.comment AS comment
@@ -170,7 +193,6 @@ def movie_detail(title):
         user_rating = rating_data["rating"] if rating_data else None
         user_comment = rating_data["comment"] if rating_data else None
 
-        # Diğer kullanıcıların yorumları
         comments_result = session_db.run("""
             MATCH (u:User)-[r:RATED]->(m:Movie {title: $title})
             WHERE r.comment IS NOT NULL AND r.comment <> ""
@@ -179,8 +201,17 @@ def movie_detail(title):
         """, title=title)
         comments = comments_result.data()
 
-    return render_template("movie_detail.html", movie=movie, liked=liked,
-                           user_rating=user_rating, user_comment=user_comment, comments=comments,genres=genres)
+    # TMDb bilgilerini çek
+    tmdb_data = get_movie_details_from_tmdb(title)
+
+    return render_template("movie_detail.html",
+                           movie=movie,
+                           liked=liked,
+                           user_rating=user_rating,
+                           user_comment=user_comment,
+                           comments=comments,
+                           genres=genres,
+                           tmdb=tmdb_data)
 
 
 @app.route("/like/<title>", methods=["POST"])
@@ -349,23 +380,7 @@ def remove_friend(username):
     return redirect("/profile")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Admin Paneli
 
 @app.route("/admin")
 def admin_panel():
@@ -472,6 +487,7 @@ def delete_movie(title):
 
     return redirect("/admin")
 
+
 @app.route("/admin/delete_user/<username>", methods=["POST"])
 def delete_user(username):
     if session.get("username") != "Admin":
@@ -486,7 +502,7 @@ def delete_user(username):
     return redirect("/admin")
 
 
-# Çıkış
+
 @app.route("/logout")
 def logout():
     session.clear()

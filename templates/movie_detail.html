@@ -19,7 +19,21 @@
     <div class="card">
         <h1>{{ movie.title }} <small>({{ movie.year }})</small></h1>
         <p><strong>Türü:</strong> {{ ", ".join(genres) }}</p>
+
+        {% if tmdb.poster_path %}
+            <img src="{{ tmdb.poster_path }}" alt="Poster" style="width:200px;">
+        {% endif %}
+
+        {% if tmdb.tmdb_rating %}
+            <p><strong>TMDb Puanı:</strong> {{ tmdb.tmdb_rating }}</p>
+        {% endif %}
+
+        {% if tmdb.overview %}
+            <p><strong>Özet:</strong> {{ tmdb.overview }}</p>
+        {% endif %}
         
+        <br>
+
         <div class="film-rating">
             <form action="/like/{{ movie.title }}" method="POST">
                 {% if liked %}
