@@ -31,6 +31,10 @@
         {% if tmdb.overview %}
             <p><strong>Özet:</strong> {{ tmdb.overview }}</p>
         {% endif %}
+
+        {% if tmdb.trailer_url %}
+            <p><a href="{{ tmdb.trailer_url }}" target="_blank" class="btn-danger">🎬 Fragmanı İzle</a></p>
+        {% endif %}
         
         <br>
 

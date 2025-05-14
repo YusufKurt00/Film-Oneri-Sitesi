@@ -26,12 +26,30 @@ def get_movie_details_from_tmdb(title):
         data = response.json()
         if data["results"]:
             movie = data["results"][0]
+
+            # Fragman bilgisi için ek sorgu
+            movie_id = movie.get("id")
+            trailer_url = None
+
+            video_url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
+            video_params = {"api_key": TMDB_API_KEY, "language": "tr-TR"}
+            video_response = requests.get(video_url, params=video_params)
+
+            if video_response.status_code == 200:
+                video_data = video_response.json()
+                for video in video_data.get("results", []):
+                    if video["site"] == "YouTube" and video["type"] == "Trailer":
+                        trailer_url = f"https://www.youtube.com/watch?v={video['key']}"
+                        break
+
             return {
                 "poster_path": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}",
                 "overview": movie.get("overview"),
                 "tmdb_rating": round(movie.get("vote_average", 0), 1),
-                "tmdb_id": movie.get("id")
+                "tmdb_id": movie_id,
+                "trailer_url": trailer_url
             }
+
     return {}
 
 
