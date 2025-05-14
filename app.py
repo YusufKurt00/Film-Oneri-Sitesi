@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, session
 from neo4j import GraphDatabase
 import requests
+from werkzeug.security import generate_password_hash, check_password_hash  
+
 
 app = Flask(__name__)
 app.secret_key= 'cok_gizli_anahtar'
@@ -64,16 +66,22 @@ def index():
 def login():
     if request.method == "POST":
         username = request.form["username"]
+        password = request.form["password"]
+
         with driver.session() as session_db:
-            result = session_db.run("MATCH (u:User {name: $name}) RETURN u", name=username)
-            user = result.single()
-            if user:
+            result = session_db.run(
+                "MATCH (u:User {name: $name}) RETURN u.password AS password",
+                name=username
+            )
+            record = result.single()
+
+            if record and record["password"] and check_password_hash(record["password"], password):
                 session["username"] = username
                 if username == "Admin":
                     return redirect("/admin")
                 return redirect("/home")
             else:
-                return render_template("login.html", error="Kullanıcı bulunamadı.")
+                return render_template("login.html", error="Hatalı kullanıcı adı veya şifre.")
     return render_template("login.html")
 
 
@@ -82,13 +90,18 @@ def login():
 def register():
     if request.method == "POST":
         username = request.form["username"]
+        password = request.form["password"]
+        hashed_password = generate_password_hash(password)
+
         with driver.session() as session_db:
-            # kullanıcı zaten var mı?
             result = session_db.run("MATCH (u:User {name: $name}) RETURN u", name=username)
             if result.single():
                 return render_template("register.html", error="Bu kullanıcı zaten var.")
             else:
-                session_db.run("CREATE (:User {name: $name})", name=username)
+                session_db.run(
+                    "CREATE (:User {name: $name, password: $password})",
+                    name=username, password=hashed_password
+                )
                 session["username"] = username
                 return redirect("/home")
     return render_template("register.html")

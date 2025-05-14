@@ -10,9 +10,14 @@
     <div class="auth-container">
         <h2>Giriş Yap</h2>
         <form method="POST">
-            <label for="username">Kullanıcı Adı</label>
-            <input type="text" id="username" name="username" required>
-            <input type="submit" value="Giriş Yap">
+            <label>Kullanıcı Adı</label>
+            <input type="text" name="username" required><br>
+            <label>Şifre</label>
+            <input type="password" name="password" required><br>
+            <button type="submit">Giriş Yap</button>
+            {% if error %}
+                <p style="color:red;">{{ error }}</p>
+            {% endif %}
         </form>
         {% if error %}
         <div class="error">
