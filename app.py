@@ -9,11 +9,11 @@ app.secret_key= 'cok_gizli_anahtar'
 
 uri = "bolt://localhost:7687"  
 user = "neo4j"
-password = "123123yk"
+password = "password"
 driver = GraphDatabase.driver(uri, auth=(user, password))
 
 
-TMDB_API_KEY = "f937deade31ade1eff82323043246bc0"
+TMDB_API_KEY = "api_key"
 
 def get_movie_details_from_tmdb(title):
     url = f"https://api.themoviedb.org/3/search/movie"
